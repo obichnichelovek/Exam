@@ -1,0 +1,53 @@
+﻿@page "/manga"
+@using System.Text.Json;
+@using MangaLibraryAPI.Models;
+@using MangaLibraryAPI.Services;
+
+<h3>Manga</h3>
+
+@foreach(var manga in mangas)
+{
+    <div class="card">
+        <div class="card-top">
+            <img src="@manga.Poster" width="225" height="320" />
+        </div>
+        <div class="card-bottom">
+            <h3>@manga.TitleEnglish | @manga.Rating⭐</h3>
+            <p>@manga.TitleJapanese</p>
+        </div>
+    </div>
+}
+
+@code {
+    //public sealed class MangaCard
+    //{
+    //    public int ID { get; set; }
+    //    public string TitleEnglish { get; set; } = null!;
+    //    public string TitleJapanese { get; set; } = null!;
+    //    public string Poster { get; set; } = null!;
+    //}
+    private readonly MangaLibraryRepository _repo;
+
+
+    private const string API_URL = "https://localhost:7277";
+    private List<MangaLite> mangas = new();
+
+    private async Task RefreshList()
+    {
+        var mangas = await _repo.GetMangasAsync(1, 2);
+        //HttpClient client = new();
+        //var client = new HttpClient();
+        //HttpResponseMessage response = await client.GetAsync($"{API_URL}/api/manga");
+
+        //client.Dispose();
+        //using var responseStream = await response.Content.ReadAsStreamAsync();
+        //var mangas = await JsonSerializer.DeserializeAsync<List<MangaLite>>(responseStream);
+    }
+
+    protected override async Task OnInitializedAsync() => await this.RefreshList();
+
+    public Manga(MangaLibraryRepository repository)
+    {
+        _repo = repository ?? throw new ArgumentNullException(nameof(repository));
+    }
+}
